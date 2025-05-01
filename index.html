@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор тепловой мощности радиатора</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --background-color: #f5f7fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .brand {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .brand h1 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .brand .subtitle {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .galf-design {
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 0.8em;
+            text-align: center;
+        }
+        
+        .card {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--card-color);
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .slider-container {
+            margin-top: 15px;
+        }
+        
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .slider-label {
+            font-weight: 500;
+        }
+        
+        .slider-value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .slider::-webkit-slider-thumb:hover {
+            background: var(--secondary-color);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .results {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .results h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.3em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 500;
+        }
+        
+        .result-value {
+            font-weight: 600;
+        }
+        
+        .total-result {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid var(--primary-color);
+            font-size: 1.1em;
+        }
+        
+        .note {
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 0.85em;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="brand">
+            <h1>Калькулятор тепловой мощности</h1>
+            <div class="subtitle">Расчет снижения мощности радиатора в зависимости от монтажных условий</div>
+        </div>
+        
+        <div class="card">
+            <div class="form-group">
+                <label for="radiator-type">Тип радиатора</label>
+                <select id="radiator-type">
+                    <option value="10">Тип 10</option>
+                    <option value="11">Тип 11</option>
+                    <option value="12/21">Тип 12/21</option>
+                    <option value="22">Тип 22</option>
+                    <option value="33">Тип 33</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Расстояние до ниши</span>
+                        <span class="slider-value" id="niche-value">100 мм</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="100" class="slider" id="niche-slider">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Расстояние от пола</span>
+                        <span class="slider-value" id="floor-value">100 мм</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="100" class="slider" id="floor-slider">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span class="slider-label">Расстояние от стены</span>
+                        <span class="slider-value" id="wall-value">100 мм</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="100" class="slider" id="wall-slider">
+                </div>
+            </div>
+            
+            <button onclick="calculatePowerReduction()">Рассчитать</button>
+        </div>
+        
+        <div id="results" class="results">
+            <h2>Результаты расчета</h2>
+            <div class="result-item">
+                <span class="result-label">Снижение из-за ниши:</span>
+                <span class="result-value" id="reduction-niche">0%</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Снижение из-за расстояния от пола:</span>
+                <span class="result-value" id="reduction-floor">0%</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Снижение из-за расстояния от стены:</span>
+                <span class="result-value" id="reduction-wall">0%</span>
+            </div>
+            <div class="result-item total-result">
+                <span class="result-label">Общее снижение мощности:</span>
+                <span class="result-value" id="total-reduction">0%</span>
+            </div>
+        </div>
+        
+        <div class="note">
+            Примечание: Снижение мощности происходит из-за ухудшения конвекции воздуха при приближении радиатора к препятствиям.
+        </div>
+        
+        <div class="galf-design">
+            Galf Design
+        </div>
+    </div>
+    
+    <script>
+        // Обновляем значения ползунков в реальном времени
+        document.getElementById('niche-slider').addEventListener('input', function() {
+            document.getElementById('niche-value').textContent = this.value + ' мм';
+        });
+        
+        document.getElementById('floor-slider').addEventListener('input', function() {
+            document.getElementById('floor-value').textContent = this.value + ' мм';
+        });
+        
+        document.getElementById('wall-slider').addEventListener('input', function() {
+            document.getElementById('wall-value').textContent = this.value + ' мм';
+        });
+
+        function calculatePowerReduction() {
+            // Получаем значения из формы
+            const radiatorType = document.getElementById('radiator-type').value;
+            const distanceNiche = parseInt(document.getElementById('niche-slider').value);
+            const distanceFloor = parseInt(document.getElementById('floor-slider').value);
+            const distanceWall = parseInt(document.getElementById('wall-slider').value);
+            
+            // Коэффициенты снижения мощности (чем меньше расстояние, тем больше снижение)
+            const reductionFactors = {
+                '10': {
+                    'niche': x => x <= 100 ? (100 - x) * 0.5 : 0,
+                    'floor': x => x <= 100 ? (100 - x) * 0.3 : 0,
+                    'wall': x => x <= 100 ? (100 - x) * 0.4 : 0
+                },
+                '11': {
+                    'niche': x => x <= 100 ? (100 - x) * 0.45 : 0,
+                    'floor': x => x <= 100 ? (100 - x) * 0.35 : 0,
+                    'wall': x => x <= 100 ? (100 - x) * 0.35 : 0
+                },
+                '12/21': {
+                    'niche': x => x <= 100 ? (100 - x) * 0.4 : 0,
+                    'floor': x => x <= 100 ? (100 - x) * 0.25 : 0,
+                    'wall': x => x <= 100 ? (100 - x) * 0.3 : 0
+                },
+                '22': {
+                    'niche': x => x <= 100 ? (100 - x) * 0.35 : 0,
+                    'floor': x => x <= 100 ? (100 - x) * 0.2 : 0,
+                    'wall': x => x <= 100 ? (100 - x) * 0.25 : 0
+                },
+                '33': {
+                    'niche': x => x <= 100 ? (100 - x) * 0.3 : 0,
+                    'floor': x => x <= 100 ? (100 - x) * 0.15 : 0,
+                    'wall': x => x <= 100 ? (100 - x) * 0.2 : 0
+                }
+            };
+            
+            // Расчет снижения мощности
+            const nicheReduction = distanceNiche >= 0 ? 
+                Math.min(50, reductionFactors[radiatorType]['niche'](distanceNiche)) : 0;
+            const floorReduction = Math.min(30, reductionFactors[radiatorType]['floor'](distanceFloor));
+            const wallReduction = Math.min(40, reductionFactors[radiatorType]['wall'](distanceWall));
+            
+            // Общее снижение мощности (максимальное из всех факторов)
+            const totalReduction = Math.max(nicheReduction, floorReduction, wallReduction);
+            
+            // Выводим результаты
+            document.getElementById('reduction-niche').textContent = nicheReduction.toFixed(1) + '%';
+            document.getElementById('reduction-floor').textContent = floorReduction.toFixed(1) + '%';
+            document.getElementById('reduction-wall').textContent = wallReduction.toFixed(1) + '%';
+            document.getElementById('total-reduction').textContent = totalReduction.toFixed(1) + '%';
+            
+            // Показываем блок с результатами
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
